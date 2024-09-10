@@ -154,6 +154,7 @@ export class Popup extends Evented {
     _closeButton: HTMLButtonElement;
     _tip: HTMLElement;
     _lngLat: LngLat;
+    _elevation: number;
     _trackPointer: boolean;
     _pos: Point;
 
@@ -271,10 +272,12 @@ export class Popup extends Evented {
      * Sets the geographical location of the popup's anchor, and moves the popup to it. Replaces trackPointer() behavior.
      *
      * @param lnglat - The geographical location to set as the popup's anchor.
+     * @param elevation - The geographical elevation of the popup.
      * @returns `this`
      */
-    setLngLat(lnglat: LngLatLike): this {
+    setLngLat(lnglat: LngLatLike, elevation?: number): this {
         this._lngLat = LngLat.convert(lnglat);
+        this._elevation = elevation;
         this._pos = null;
 
         this._trackPointer = false;
@@ -572,7 +575,7 @@ export class Popup extends Evented {
 
         if (this._trackPointer && !cursor) return;
 
-        const pos = this._pos = this._trackPointer && cursor ? cursor : this._map.project(this._lngLat);
+        const pos = this._pos = this._trackPointer && cursor ? cursor : this._map.project(this._lngLat, this._elevation);
 
         let anchor = this.options.anchor;
         const offset = normalizeOffset(this.options.offset);

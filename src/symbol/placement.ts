@@ -472,6 +472,10 @@ export class Placement {
                 return;
             }
 
+            const symbolElevation = symbolInstance.symbolElevation;
+            const getElevation = symbolElevation ? (x: number, y: number) => symbolElevation : this.terrain ? (x: number, y: number) => this.terrain.getElevation(tileID, x, y) : (x: number, y: number) => null;
+
+
             let placeText = false;
             let placeIcon = false;
             let offscreen = true;

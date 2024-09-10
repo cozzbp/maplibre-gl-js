@@ -2,6 +2,7 @@ const float PI = 3.141592653589793;
 
 in vec4 a_pos_offset;
 in vec4 a_data;
+in float a_elevation;
 in vec3 a_projected_pos;
 in float a_fade_opacity;
 
@@ -55,6 +56,9 @@ void main() {
     float is_sdf = a_size[0] - 2.0 * a_size_min;
 
     float ele = get_elevation(a_pos);
+    if(a_elevation > 0.0) {
+        ele = a_elevation;
+    }
     highp float segment_angle = -a_projected_pos[2];
     float size;
 

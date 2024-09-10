@@ -2,6 +2,7 @@ const float PI = 3.141592653589793;
 
 in vec4 a_pos_offset;
 in vec4 a_data;
+in float a_elevation;
 in vec4 a_pixeloffset;
 in vec3 a_projected_pos;
 in float a_fade_opacity;
@@ -41,6 +42,10 @@ void main() {
     vec2 a_minFontScale = a_pixeloffset.zw / 256.0;
 
     float ele = get_elevation(a_pos);
+    if(a_elevation > 0.0) {
+        ele = a_elevation;
+    }
+
     highp float segment_angle = -a_projected_pos[2];
     float size;
 

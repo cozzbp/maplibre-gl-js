@@ -532,8 +532,8 @@ export class Transform {
      * @param terrain - optional terrain
      * @returns screen point
      */
-    locationPoint(lnglat: LngLat, terrain?: Terrain): Point {
-        return terrain ?
+    locationPoint(lnglat: LngLat, terrain?: Terrain, elevationOverride?: number): Point {
+        return elevationOverride ? this.coordinatePoint(this.locationCoordinate(lnglat), elevationOverride, this.pixelMatrix3D) : terrain ?
             this.coordinatePoint(this.locationCoordinate(lnglat), terrain.getElevationForLngLatZoom(lnglat, this.tileZoom), this.pixelMatrix3D) :
             this.coordinatePoint(this.locationCoordinate(lnglat));
     }

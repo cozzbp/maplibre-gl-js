@@ -3,10 +3,12 @@ import {
     collisionVertexAttributes,
     collisionBoxLayout,
     dynamicLayoutAttributes,
+    elevationLayoutAttributes,
 } from './symbol_attributes';
 
 import {SymbolLayoutArray,
     SymbolDynamicLayoutArray,
+    SymbolElevationArray,
     SymbolOpacityArray,
     CollisionBoxLayoutArray,
     CollisionVertexArray,
@@ -79,6 +81,7 @@ export type CollisionArrays = {
 };
 
 export type SymbolFeature = {
+    elevation: number;
     sortKey: number | void;
     text: Formatted | void;
     icon: ResolvedImage;
@@ -151,6 +154,13 @@ function addDynamicAttributes(dynamicLayoutVertexArray: StructArray, p: Point, a
     dynamicLayoutVertexArray.emplaceBack(p.x, p.y, angle);
 }
 
+function addElevationAttributes(elevationLayoutVertexArray: StructArray, elevation: number) {
+    elevationLayoutVertexArray.emplaceBack(elevation);
+    elevationLayoutVertexArray.emplaceBack(elevation);
+    elevationLayoutVertexArray.emplaceBack(elevation);
+    elevationLayoutVertexArray.emplaceBack(elevation);
+}
+
 function containsRTLText(formattedText: Formatted): boolean {
     for (const section of formattedText.sections) {
         if (stringContainsRTLText(section.text)) {
@@ -173,6 +183,9 @@ export class SymbolBuffers {
     dynamicLayoutVertexArray: SymbolDynamicLayoutArray;
     dynamicLayoutVertexBuffer: VertexBuffer;
 
+    elevationLayoutVertexArray: SymbolElevationArray;
+    elevationVertexBuffer: VertexBuffer;
+
     opacityVertexArray: SymbolOpacityArray;
     opacityVertexBuffer: VertexBuffer;
     hasVisibleVertices: boolean;
@@ -188,6 +201,7 @@ export class SymbolBuffers {
         this.programConfigurations = programConfigurations;
         this.segments = new SegmentVector();
         this.dynamicLayoutVertexArray = new SymbolDynamicLayoutArray();
+        this.elevationLayoutVertexArray = new SymbolElevationArray();
         this.opacityVertexArray = new SymbolOpacityArray();
         this.hasVisibleVertices = false;
         this.placedSymbolArray = new PlacedSymbolArray();
@@ -197,7 +211,8 @@ export class SymbolBuffers {
         return this.layoutVertexArray.length === 0 &&
             this.indexArray.length === 0 &&
             this.dynamicLayoutVertexArray.length === 0 &&
-            this.opacityVertexArray.length === 0;
+            this.opacityVertexArray.length === 0 &&
+            this.elevationLayoutVertexArray.length === 0;
     }
 
     upload(context: Context, dynamicIndexBuffer: boolean, upload?: boolean, update?: boolean) {
@@ -209,6 +224,7 @@ export class SymbolBuffers {
             this.layoutVertexBuffer = context.createVertexBuffer(this.layoutVertexArray, symbolLayoutAttributes.members);
             this.indexBuffer = context.createIndexBuffer(this.indexArray, dynamicIndexBuffer);
             this.dynamicLayoutVertexBuffer = context.createVertexBuffer(this.dynamicLayoutVertexArray, dynamicLayoutAttributes.members, true);
+            this.elevationVertexBuffer = context.createVertexBuffer(this.elevationLayoutVertexArray, elevationLayoutAttributes.members, true);
             this.opacityVertexBuffer = context.createVertexBuffer(this.opacityVertexArray, shaderOpacityAttributes, true);
             // This is a performance hack so that we can write to opacityVertexArray with uint32s
             // even though the shaders read uint8s
@@ -227,6 +243,7 @@ export class SymbolBuffers {
         this.segments.destroy();
         this.dynamicLayoutVertexBuffer.destroy();
         this.opacityVertexBuffer.destroy();
+        this.elevationVertexBuffer.destroy();
     }
 }
 
@@ -447,6 +464,8 @@ export class SymbolBucket implements Bucket {
         // and null returned because icon-image wasn't defined is to check whether or not iconImage.parameters is an empty object
         const hasIcon = iconImage.value.kind !== 'constant' || !!iconImage.value.value || Object.keys(iconImage.parameters).length > 0;
         const symbolSortKey = layout.get('symbol-sort-key');
+        
+        
 
         this.features = [];
 
@@ -507,6 +526,10 @@ export class SymbolBucket implements Bucket {
             const sortKey = this.sortFeaturesByKey ?
                 symbolSortKey.evaluate(evaluationFeature, {}, canonical) :
                 undefined;
+            
+            const symbolElevation = layout.get('symbol-elevation');
+            const elevation = symbolElevation.evaluate(evaluationFeature, {}, canonical)
+
 
             const symbolFeature: SymbolFeature = {
                 id,
@@ -517,7 +540,8 @@ export class SymbolBucket implements Bucket {
                 geometry: evaluationFeature.geometry,
                 properties: feature.properties,
                 type: vectorTileFeatureTypes[feature.type],
-                sortKey
+                sortKey,
+                elevation,
             };
             this.features.push(symbolFeature);
 
@@ -660,6 +684,8 @@ export class SymbolBucket implements Bucket {
             addVertex(layoutVertexArray, labelAnchor.x, labelAnchor.y, br.x, y + br.y, tex.x + tex.w, tex.y + tex.h, sizeVertex, isSDF, pixelOffsetBR.x, pixelOffsetBR.y, minFontScaleX, minFontScaleY);
 
             addDynamicAttributes(arrays.dynamicLayoutVertexArray, labelAnchor, angle);
+
+            addElevationAttributes(arrays.elevationLayoutVertexArray, feature.elevation ?? 0)
 
             indexArray.emplaceBack(index, index + 1, index + 2);
             indexArray.emplaceBack(index + 1, index + 2, index + 3);

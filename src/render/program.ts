@@ -163,7 +163,8 @@ export class Program<Us extends UniformBindings> {
         configuration?: ProgramConfiguration | null,
         dynamicLayoutBuffer?: VertexBuffer | null,
         dynamicLayoutBuffer2?: VertexBuffer | null,
-        dynamicLayoutBuffer3?: VertexBuffer | null) {
+        dynamicLayoutBuffer3?: VertexBuffer | null,
+        dynamicLayoutBuffer4?: VertexBuffer | null) {
 
         const gl = context.gl;
 
@@ -220,7 +221,8 @@ export class Program<Us extends UniformBindings> {
                 segment.vertexOffset,
                 dynamicLayoutBuffer,
                 dynamicLayoutBuffer2,
-                dynamicLayoutBuffer3
+                dynamicLayoutBuffer3,
+                dynamicLayoutBuffer4,
             );
 
             gl.drawElements(

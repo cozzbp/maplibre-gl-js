@@ -1189,6 +1189,7 @@ export class Map extends Camera {
      * that correspond to the specified geographical location.
      *
      * @param lnglat - The geographical location to project.
+     * @param elevation - The elevation override for the projection.
      * @returns The [Point](https://github.com/mapbox/point-geometry) corresponding to `lnglat`, relative to the map's `container`.
      * @example
      * ```ts
@@ -1196,8 +1197,8 @@ export class Map extends Camera {
      * let point = map.project(coordinate);
      * ```
      */
-    project(lnglat: LngLatLike): Point {
-        return this.transform.locationPoint(LngLat.convert(lnglat), this.style && this.terrain);
+    project(lnglat: LngLatLike, elevation?: number): Point {
+        return this.transform.locationPoint(LngLat.convert(lnglat), this.style && this.terrain, elevation);
     }
 
     /**

@@ -6,6 +6,7 @@ uniform lowp float u_device_pixel_ratio;
 uniform highp float u_camera_to_center_distance;
 
 in vec2 a_pos;
+in float a_elevation;
 
 out vec3 v_data;
 out float v_visibility;
@@ -34,6 +35,9 @@ void main(void) {
     // in extrusion data
     vec2 circle_center = floor(a_pos * 0.5);
     float ele = get_elevation(circle_center);
+    if(a_elevation > 0.0) {
+        ele = a_elevation;
+    }
     v_visibility = calculate_visibility(u_matrix * vec4(circle_center, ele, 1.0));
 
     if (u_pitch_with_map) {

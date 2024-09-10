@@ -19,6 +19,10 @@ export const collisionVertexAttributes = createLayout([
     {name: 'a_shift', components: 2, type: 'Float32'}
 ]);
 
+export const elevationLayoutAttributes = createLayout([
+    {name: 'a_elevation', components: 1, type: 'Uint32'}
+]);
+
 export const collisionBox = createLayout([
     // the box is centered around the anchor point
     {type: 'Int16', name: 'anchorPointX'},
@@ -101,6 +105,7 @@ export const symbolInstance = createLayout([
     {type: 'Uint32', name: 'crossTileID'},
     {type: 'Float32', name: 'textBoxScale'},
     {type: 'Float32', name: 'collisionCircleDiameter'},
+    {type: 'Float32', name: 'symbolElevation'},
     {type: 'Uint16', name: 'textAnchorOffsetStartIndex'},
     {type: 'Uint16', name: 'textAnchorOffsetEndIndex'}
 ]);

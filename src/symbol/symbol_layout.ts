@@ -688,6 +688,7 @@ function addSymbol(bucket: SymbolBucket,
 
     const variableAnchorOffset = getTextVariableAnchorOffset(layer, feature, canonical);
     const [textAnchorOffsetStartIndex, textAnchorOffsetEndIndex] = addTextVariableAnchorOffsets(bucket.textAnchorOffsets, variableAnchorOffset);
+    const symbolElevation = layer.layout.get('symbol-elevation').evaluate(feature, {}, canonical);
 
     bucket.symbolInstances.emplaceBack(
         anchor.x,
@@ -716,6 +717,7 @@ function addSymbol(bucket: SymbolBucket,
         0,
         textBoxScale,
         collisionCircleDiameter,
+        symbolElevation,
         textAnchorOffsetStartIndex,
         textAnchorOffsetEndIndex);
 }

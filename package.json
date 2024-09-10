@@ -186,5 +186,10 @@
   "engines": {
     "npm": ">=8.1.0",
     "node": ">=16.14.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@maplibre/maplibre-gl-style-spec@19.3.3": "patches/@maplibre__maplibre-gl-style-spec@19.3.3.patch"
+    }
   }
 }
